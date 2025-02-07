@@ -102,7 +102,10 @@ class CustomDPOTrainer(DPOTrainer):
             self.add_callback(SaveProcessorCallback(processor))
 
         if finetuning_args.use_badam:
-            from badam import BAdamCallback, clip_grad_norm_old_version  # type: ignore
+            from badam import (
+                BAdamCallback,  # type: ignore
+                clip_grad_norm_old_version,
+            )
 
             self.accelerator.clip_grad_norm_ = MethodType(clip_grad_norm_old_version, self.accelerator)
             self.add_callback(BAdamCallback)
@@ -312,3 +315,24 @@ class CustomDPOTrainer(DPOTrainer):
                 logs[key] = metric
 
         return Trainer.log(self, logs, *args, **kwargs)
+
+    @override
+    def create_model_card(
+        self,
+        language: Optional[str] = None,
+        license: Optional[str] = None,
+        tags: Union[str, List[str], None] = None,
+        model_name: Optional[str] = None,
+        finetuned_from: Optional[str] = None,
+        tasks: Union[str, List[str], None] = None,
+        dataset_tags: Union[str, List[str], None] = None,
+        dataset: Union[str, List[str], None] = None,
+        dataset_args: Union[str, List[str], None] = None,
+    ) -> None:
+        dataset_name = None
+        if dataset:
+            dataset_name = dataset if isinstance(dataset, str) else ", ".join(dataset)
+        super().create_model_card(
+            dataset_name=dataset_name,
+            tags=tags,
+        )

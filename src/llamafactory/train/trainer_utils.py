@@ -92,6 +92,7 @@ def create_modelcard_and_push(
         "tasks": "text-generation",
         "finetuned_from": model_args.model_name_or_path,
         "tags": ["llama-factory", finetuning_args.finetuning_type],
+        "license": "other",
     }
     if data_args.dataset is not None:
         kwargs["dataset"] = data_args.dataset
@@ -104,7 +105,7 @@ def create_modelcard_and_push(
     elif training_args.push_to_hub:
         trainer.push_to_hub(**kwargs)
     else:
-        trainer.create_model_card(license="other", **kwargs)  # prevent from connecting to hub
+        trainer.create_model_card(**kwargs)  # prevent from connecting to hub
 
 
 def create_ref_model(
